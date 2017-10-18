@@ -1,4 +1,4 @@
-var coap = require('coap'),
+var coap = require('../../wot-book-master/chapter7-implementation/part1-2-direct-gateway/node_modules/coap'),
   utils = require('../../wot-book-master/chapter7-implementation/part1-2-direct-gateway/utils/utils');
 
 var port = 5683;
@@ -7,7 +7,9 @@ coap.createServer(function (req, res) {
   console.info('CoAP device got a request for %s', req.url);
 
   if (req.headers['Accept'] != 'application/json') {
-  	res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Type', req.headers['Accept']);
+  } else {
+    res.setHeader('Content-Type', 'application/json');
   } 
 
   switch (req.url) {
