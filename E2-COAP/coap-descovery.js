@@ -10,40 +10,32 @@ coap.createServer(function (req, res) {
   console.info('CoAP device got a request for %s', req.url);
   console.info('CoAP device got a request for %s', req.headers['Accept']);
 
-  switch (req.url) {
-    case "/co2":
-      respond(req, res, '{"co2" :' + randomInt(1, 40) + '}'); 
-      break;
-    case "/temp":
-      respond(req, res, '{"temperature" :' + randomInt(1, 40) + '}');
+  var response = '</actuators/leds>;if="leds"' +
+  '</sensors/light>;if="light"' +
+  '</sensors/temperature>;if="temperature"' +
+  '</sensors/buttons/1>;if="1"' +
+  '</sensors/buttons/2>;if="2"' +
+  '</sensors/accel/x>;if="x"' +
+  '</sensors/accel/y>;if="y"' +
+  '</sensors/accel/z>;if="z"' +
+  '</sensors/tilt/x>;if="x"' +
+  '</sensors/tilt/y>;if="y"' +
+  '</sensors/tilt/z>;if="z"'
+  
+  switch (req.url) { //#C
+    case "/.well-known/core":
+      respond(res, response, req); //#D
       break;
     default:
-      respond(req, res);
+      respond(res, req);
   }
+  
 }).listen(port, function () {
   console.log("CoAP server started on port %s", port)
 });
 
 function respond(req, res, content) { 
-  if (content) {
-
-    switch (req.headers['Accept']) {
-      case "application/xml":
-        res.setOption('Content-Format', ''+req.headers['Accept']+'');
-        break;
-      case "text/html":
-        res.setOption('Content-Format', ''+req.headers['Accept']+'');
-        break;
-      case "text/plain":
-        res.setOption('Content-Format', ''+req.headers['Accept']+'');
-        break;
-      default:
-        res.setOption('Content-Format', 'application/json');
-    }
-    //res.code = '2.05';
-    res.end(content);
-  } else {
-    res.code = '4.04';
-    res.end();
-  }
+  res.setOption('Content-Format', 'application/link-format');
+  res.code = '2.05';
+  res.end(content);
 };
